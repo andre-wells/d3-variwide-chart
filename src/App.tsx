@@ -3,6 +3,7 @@ import BarChartSimple from './components/BarChartSimple';
 import BarChartWithScale from './components/BarChartWithScale';
 import LineGraph from './components/LineGraph';
 import VaribleWidthBarChart from './components/VaribleWidthBarChart';
+import VaribleWidthBarChartV2 from './components/VaribleWidthBarChartV2';
 
 function App() {
   return (
@@ -17,6 +18,9 @@ function App() {
 
       <h2>Sample Bar Chart with Scale </h2>
       <BarChartWithScale />
+
+      <h2>Variable Width Bar Chart Final</h2>
+      <VaribleWidthBarChartV2 />
 
       <h2>Variable Width Bar Chart Sample</h2>
       <VaribleWidthBarChart
