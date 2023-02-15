@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
-import * as d3 from 'd3';
-import { clearSvg } from '../utils/svg';
+import { clearSvg, createSvg } from '../utils/svg';
 
 const CONTAINER_ID = 'svg-simple-bar-chart-container';
 const SVG_ID = 'svg-simple-bar-chart';
@@ -19,12 +18,8 @@ const BarChartSimple = () => {
 
   const populate = () => {
     // Create SVG element
-    const svg = d3
-      .select(`#${CONTAINER_ID}`)
-      .append('svg')
-      .attr('id', SVG_ID)
-      .attr('width', w)
-      .attr('height', h);
+
+    const svg = createSvg(`#${CONTAINER_ID}`, SVG_ID, w, h);
 
     // Populate bars
     svg
