@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 import * as d3 from 'd3';
 import { clearSvg } from '../utils/svg';
 
-const SVG_ID = 'svg-chart';
+const CONTAINER_ID = 'svg-simple-bar-chart-container';
+const SVG_ID = 'svg-simple-bar-chart';
 
 const dataset = [5, 10, 13, 19, 21, 25, 22, 18, 15, 13, 11, 12, 15, 20, 18, 17, 16, 18, 23, 25];
 
@@ -17,10 +18,9 @@ const BarChartSimple = () => {
   }, []);
 
   const populate = () => {
-    console.log('populate');
     // Create SVG element
     const svg = d3
-      .select('#chartContainer')
+      .select(`#${CONTAINER_ID}`)
       .append('svg')
       .attr('id', SVG_ID)
       .attr('width', w)
@@ -38,7 +38,7 @@ const BarChartSimple = () => {
       .attr('height', 100);
   };
 
-  return <div id='chartContainer'></div>;
+  return <div id={CONTAINER_ID}></div>;
 };
 
 export default BarChartSimple;
