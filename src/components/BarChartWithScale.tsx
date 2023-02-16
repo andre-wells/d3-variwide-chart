@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
-import React, { useEffect } from 'react';
-import { type IMargin } from '../models/margin';
-import { clearSvg, createSvg } from '../utils/svg';
+import { select } from 'd3';
+import { useEffect } from 'react';
+import { type IMargin } from './VaribleWidthBarChart/models';
 
 // Width and height
 const width = 960;
@@ -9,6 +9,23 @@ const height = 500;
 const margin: IMargin = { top: 20, right: 30, bottom: 55, left: 70 };
 const CONTAINER_ID = 'svg-bar-chart-scale-container';
 const SVG_ID = 'svg-bar-chart-scale';
+
+const createSvg = (
+  selector: string,
+  svgId: string,
+  svgWidth: number,
+  svgHeight: number,
+): d3.Selection<SVGSVGElement, unknown, HTMLElement, any> => {
+  return select(selector)
+    .append('svg')
+    .attr('id', svgId)
+    .attr('width', svgWidth)
+    .attr('height', svgHeight);
+};
+
+const clearSvg = (selector: string) => {
+  return select(selector).remove();
+};
 
 const BarChartWithScale = () => {
   useEffect(() => {

@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
 import { useEffect, useRef } from 'react';
-import { type Datum } from '../models/datum';
-import { type IMargin } from '../models/margin';
-import { getMaxRange, getMaxRangeFromValue, getMinRange } from '../utils/scales';
+import { type Datum, type IMargin } from './models';
+
+import { getMaxRange, getMaxRangeFromValue, getMinRange } from './utils';
 
 const scaleTickFactor = 10;
 const width = 960;
@@ -27,7 +27,7 @@ const data: Datum[] = [
   },
 ];
 
-const VaribleWidthBarChartV2 = () => {
+export const VaribleWidthBarChart = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -63,9 +63,7 @@ const VaribleWidthBarChartV2 = () => {
     const xScaleValue = data.reduce((acc, curr) => {
       return acc + curr.x;
     }, 0);
-    console.log('sum of z values to apply to x a scale', xScaleValue);
     const maxXRange = getMaxRangeFromValue(xScaleValue, scaleTickFactor);
-    console.log('maxXRange', maxXRange);
 
     // Define scales
     const xScale = d3
@@ -123,5 +121,3 @@ const VaribleWidthBarChartV2 = () => {
 
   return <div ref={containerRef}></div>;
 };
-
-export default VaribleWidthBarChartV2;
