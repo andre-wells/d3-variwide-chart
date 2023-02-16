@@ -1,7 +1,7 @@
 import './App.css';
 import BarChartWithScale from './components/BarChartWithScale';
-import VaribleWidthBarChart from './components/VaribleWidthBarChart';
-import VaribleWidthBarChartV2 from './components/VaribleWidthBarChartV2';
+import { VaribleWidthBarChart } from './components/VaribleWidthBarChart';
+import { unSortedData } from './data/testData';
 
 function App() {
   return (
@@ -12,13 +12,12 @@ function App() {
       <BarChartWithScale />
 
       <h2>Variable Width Bar Chart</h2>
-      <VaribleWidthBarChartV2 />
-
-      <h2>Variable Width Bar Chart Sample</h2>
       <VaribleWidthBarChart
-        margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
-        svgWidth={500}
-        svgHeight={200}
+        width={960}
+        height={500}
+        scaleTickFactor={20}
+        margin={{ top: 20, right: 30, bottom: 55, left: 70 }}
+        data={unSortedData}
       />
     </div>
   );

@@ -1,48 +1,27 @@
 import * as d3 from 'd3';
 import { useEffect, useRef } from 'react';
-import { type Datum } from '../models/datum';
-import { type IMargin } from '../models/margin';
-import { getMaxRange, getMaxRangeFromValue, getMinRange } from '../utils/scales';
+import { getColor } from './colors';
+import { type Datum, type IMargin } from './models';
+import { getMaxRange, getMaxRangeFromValue, getMinRange, sortData } from './utils';
 
-const scaleTickFactor = 10;
-const width = 960;
-const height = 500;
-const margin: IMargin = { top: 20, right: 30, bottom: 55, left: 70 };
+interface IProps {
+  width: number;
+  height: number;
+  scaleTickFactor: number;
+  margin: IMargin;
+  data: Datum[];
+}
 
-const data: Datum[] = [
-  {
-    name: 'Example 1',
-    y: -193.36,
-    x: 21.6,
-  },
-  {
-    name: 'Example 2',
-    y: 16.16,
-    x: 275.48,
-  },
-  {
-    name: 'Example 3',
-    y: 42,
-    x: 40,
-  },
-];
+export const VaribleWidthBarChart = (props: IProps) => {
+  const { width, height, scaleTickFactor, margin, data } = props;
 
-const VaribleWidthBarChartV2 = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let ignore = false;
-
-    const fetchData = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 200)); // Simulate a data fetch
-      if (!ignore) {
-        Populate(data);
-      }
-      return data;
-    };
-
-    void fetchData();
-
+    if (!ignore) {
+      Populate(data);
+    }
     return () => {
       ignore = true;
     };
@@ -63,9 +42,7 @@ const VaribleWidthBarChartV2 = () => {
     const xScaleValue = data.reduce((acc, curr) => {
       return acc + curr.x;
     }, 0);
-    console.log('sum of z values to apply to x a scale', xScaleValue);
     const maxXRange = getMaxRangeFromValue(xScaleValue, scaleTickFactor);
-    console.log('maxXRange', maxXRange);
 
     // Define scales
     const xScale = d3
@@ -85,7 +62,7 @@ const VaribleWidthBarChartV2 = () => {
     // Add the rectangles
     svg
       .selectAll('rect')
-      .data(data)
+      .data(sortData(data))
       .join('rect')
       .attr('class', 'bar')
       .attr('x', (d, i) => {
@@ -103,25 +80,49 @@ const VaribleWidthBarChartV2 = () => {
         return Math.abs(yScale(0) - yScale(d.y));
       })
       .attr('fill', (d, i) => {
-        return i % 2 === 0 ? 'steelblue' : 'firebrick';
+        return getColor(i);
       });
 
-    // append x axis
     svg
       .append('g')
-      .attr('transform', `translate(0,${height - margin.bottom})`)
+      .attr('transform', `translate(0, ${height - margin.bottom})`)
       .call(xAxis)
-      .selectAll('text') // everything from this point is optional
-      .style('text-anchor', 'end')
-      .attr('dx', '-.8em')
-      .attr('dy', '.15em')
-      .attr('transform', 'rotate(-65)');
+      .selectAll('text')
+      .style('text-anchor', 'middle');
 
     // append the y axis
     svg.append('g').attr('transform', `translate(${margin.left},0)`).call(yAxis);
+
+    const legend = svg
+      .append('g')
+      .attr('class', 'legend')
+      .attr('transform', `translate(${margin.left},${height - margin.bottom + 30})`);
+
+    legend
+      .selectAll('.legend-item')
+      .data(data)
+      .join('g')
+      .attr('class', 'legend-item')
+      .attr('transform', (d, i) => `translate(${i * 100}, 0)`);
+
+    legend
+      .selectAll('.legend-item')
+      .append('rect')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', 18)
+      .attr('height', 18)
+      .attr('fill', (d, i) => getColor(i));
+
+    legend
+      .selectAll('.legend-item')
+      .data(data)
+      .append('text')
+      .attr('x', 24)
+      .attr('y', 9)
+      .attr('dy', '.35em')
+      .text((d) => d.name);
   };
 
   return <div ref={containerRef}></div>;
 };
-
-export default VaribleWidthBarChartV2;
