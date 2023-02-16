@@ -19,17 +19,9 @@ export const VaribleWidthBarChart = (props: IProps) => {
 
   useEffect(() => {
     let ignore = false;
-
-    const fetchData = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 200)); // Simulate a data fetch
-      if (!ignore) {
-        Populate(data);
-      }
-      return data;
-    };
-
-    void fetchData();
-
+    if (!ignore) {
+      Populate(data);
+    }
     return () => {
       ignore = true;
     };
@@ -92,18 +84,55 @@ export const VaribleWidthBarChart = (props: IProps) => {
       });
 
     // append x axis
+    // svg
+    //   .append('g')
+    //   .attr('transform', `translate(0,${height - margin.bottom})`)
+    //   .call(xAxis)
+    //   .selectAll('text') // everything from this point is optional
+    //   .style('text-anchor', 'end')
+    //   .attr('dx', '-.8em')
+    //   .attr('dy', '.15em')
+    //   .attr('transform', 'rotate(-65)');
+
     svg
       .append('g')
-      .attr('transform', `translate(0,${height - margin.bottom})`)
+      .attr('transform', `translate(0, ${height - margin.bottom})`)
       .call(xAxis)
-      .selectAll('text') // everything from this point is optional
-      .style('text-anchor', 'end')
-      .attr('dx', '-.8em')
-      .attr('dy', '.15em')
-      .attr('transform', 'rotate(-65)');
+      .selectAll('text')
+      .style('text-anchor', 'middle');
 
     // append the y axis
     svg.append('g').attr('transform', `translate(${margin.left},0)`).call(yAxis);
+
+    const legend = svg
+      .append('g')
+      .attr('class', 'legend')
+      .attr('transform', `translate(${margin.left},${height - margin.bottom + 30})`);
+
+    legend
+      .selectAll('.legend-item')
+      .data(data)
+      .join('g')
+      .attr('class', 'legend-item')
+      .attr('transform', (d, i) => `translate(${i * 100}, 0)`);
+
+    legend
+      .selectAll('.legend-item')
+      .append('rect')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', 18)
+      .attr('height', 18)
+      .attr('fill', (d, i) => getColor(i));
+
+    legend
+      .selectAll('.legend-item')
+      .data(data)
+      .append('text')
+      .attr('x', 24)
+      .attr('y', 9)
+      .attr('dy', '.35em')
+      .text((d) => d.name);
   };
 
   return <div ref={containerRef}></div>;

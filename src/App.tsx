@@ -17,7 +17,6 @@ function App() {
         height={500}
         scaleTickFactor={20}
         margin={{ top: 20, right: 30, bottom: 55, left: 70 }}
-        // data={sortedData}
         data={unSortedData}
       />
     </div>
