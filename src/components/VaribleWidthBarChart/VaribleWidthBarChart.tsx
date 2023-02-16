@@ -1,33 +1,20 @@
 import * as d3 from 'd3';
 import { useEffect, useRef } from 'react';
+import { getColor } from './colors';
 import { type Datum, type IMargin } from './models';
-
 import { getMaxRange, getMaxRangeFromValue, getMinRange } from './utils';
 
-const scaleTickFactor = 10;
-const width = 960;
-const height = 500;
-const margin: IMargin = { top: 20, right: 30, bottom: 55, left: 70 };
+interface IProps {
+  width: number;
+  height: number;
+  scaleTickFactor: number;
+  margin: IMargin;
+  data: Datum[];
+}
 
-const data: Datum[] = [
-  {
-    name: 'Example 1',
-    y: -193.36,
-    x: 21.6,
-  },
-  {
-    name: 'Example 2',
-    y: 16.16,
-    x: 275.48,
-  },
-  {
-    name: 'Example 3',
-    y: 42,
-    x: 40,
-  },
-];
+export const VaribleWidthBarChart = (props: IProps) => {
+  const { width, height, scaleTickFactor, margin, data } = props;
 
-export const VaribleWidthBarChart = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -101,7 +88,7 @@ export const VaribleWidthBarChart = () => {
         return Math.abs(yScale(0) - yScale(d.y));
       })
       .attr('fill', (d, i) => {
-        return i % 2 === 0 ? 'steelblue' : 'firebrick';
+        return getColor(i);
       });
 
     // append x axis
