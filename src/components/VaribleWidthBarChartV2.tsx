@@ -52,13 +52,22 @@ const VaribleWidthBarChartV2 = () => {
     const container = d3.select(containerRef.current);
     if (container === null || container === undefined) return;
 
+    // Setup SVG Element
     container.select('svg').remove();
-
     const svg = container.append('svg').attr('width', width).attr('height', height);
 
-    const minRange = getMinRange(data, (d) => d.y, scaleTickFactor);
-    const maxRange = getMaxRange(data, (d) => d.y, scaleTickFactor);
+    // Get ranges of the chart
+    const minYRange = getMinRange(data, (d) => d.y, scaleTickFactor);
+    const maxYRange = getMaxRange(data, (d) => d.y, scaleTickFactor);
 
+    // const xScaleValue = data.reduce((acc, curr) => {
+    //   return acc + curr.z;
+    // }, 0);
+    // console.log('sum of z values to apply to x a scale', xScaleValue);
+    // const maxXRange = getMaxRangeFromValue(xScaleValue, scaleTickFactor);
+    // console.log('maxXRange', maxXRange);
+
+    // Define scales
     const xScale = d3
       .scaleBand()
       .domain(data.map((d) => d.name))
@@ -67,12 +76,12 @@ const VaribleWidthBarChartV2 = () => {
 
     const yScale = d3
       .scaleLinear()
-      .domain([minRange as number, maxRange as number])
+      .domain([minYRange as number, maxYRange as number])
       .range([height - margin.bottom, margin.top]);
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
 
-    // Lastly we need to add the rectangles so we can see our bar chart:
+    // Add the rectangles
     svg
       .selectAll('rect')
       .data(data)
@@ -84,8 +93,10 @@ const VaribleWidthBarChartV2 = () => {
       })
       .attr('width', xScale.bandwidth())
       .attr('height', (d) => {
-        console.log('height', Math.abs(yScale(0) - yScale(d.y)));
         return Math.abs(yScale(0) - yScale(d.y));
+      })
+      .attr('fill', (d, i) => {
+        return i % 2 === 0 ? 'steelblue' : 'firebrick';
       });
 
     // append x axis

@@ -20,6 +20,21 @@ export function getMaxRange<T, U extends Numeric>(
   }
 }
 
+export function getMaxRangeFromValue<T, U extends Numeric>(
+  range: number,
+  tickFactor: number,
+): number | undefined {
+  const maxNum = range;
+
+  let maxFactor = Math.floor(tickFactor / maxNum);
+
+  if (maxFactor > 0) return tickFactor;
+  else {
+    maxFactor = Math.floor(maxNum / tickFactor);
+    return tickFactor * (maxFactor + 1);
+  }
+}
+
 export function getMinRange<T, U extends Numeric>(
   iterable: Iterable<T>,
   accessor: (datum: T, index: number, array: Iterable<T>) => U | undefined | null,
