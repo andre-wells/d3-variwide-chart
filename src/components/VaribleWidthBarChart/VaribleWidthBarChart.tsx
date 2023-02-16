@@ -83,17 +83,6 @@ export const VaribleWidthBarChart = (props: IProps) => {
         return getColor(i);
       });
 
-    // append x axis
-    // svg
-    //   .append('g')
-    //   .attr('transform', `translate(0,${height - margin.bottom})`)
-    //   .call(xAxis)
-    //   .selectAll('text') // everything from this point is optional
-    //   .style('text-anchor', 'end')
-    //   .attr('dx', '-.8em')
-    //   .attr('dy', '.15em')
-    //   .attr('transform', 'rotate(-65)');
-
     svg
       .append('g')
       .attr('transform', `translate(0, ${height - margin.bottom})`)
