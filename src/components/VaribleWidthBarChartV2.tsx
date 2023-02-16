@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import { useEffect, useRef } from 'react';
 import { type Datum } from '../models/datum';
 import { type IMargin } from '../models/margin';
-import { getMaxRange, getMinRange } from '../utils/scales';
+import { getMaxRange, getMaxRangeFromValue, getMinRange } from '../utils/scales';
 
 const scaleTickFactor = 10;
 const width = 960;
@@ -12,18 +12,18 @@ const margin: IMargin = { top: 20, right: 30, bottom: 55, left: 70 };
 const data: Datum[] = [
   {
     name: 'Example 1',
-    y: -14.36,
-    z: 21.6,
+    y: -193.36,
+    x: 21.6,
   },
   {
     name: 'Example 2',
-    y: 21.6,
-    z: 275.48,
+    y: 16.16,
+    x: 275.48,
   },
   {
     name: 'Example 3',
-    y: 1,
-    z: 275.48,
+    y: 42,
+    x: 40,
   },
 ];
 
@@ -60,26 +60,27 @@ const VaribleWidthBarChartV2 = () => {
     const minYRange = getMinRange(data, (d) => d.y, scaleTickFactor);
     const maxYRange = getMaxRange(data, (d) => d.y, scaleTickFactor);
 
-    // const xScaleValue = data.reduce((acc, curr) => {
-    //   return acc + curr.z;
-    // }, 0);
-    // console.log('sum of z values to apply to x a scale', xScaleValue);
-    // const maxXRange = getMaxRangeFromValue(xScaleValue, scaleTickFactor);
-    // console.log('maxXRange', maxXRange);
+    const xScaleValue = data.reduce((acc, curr) => {
+      return acc + curr.x;
+    }, 0);
+    console.log('sum of z values to apply to x a scale', xScaleValue);
+    const maxXRange = getMaxRangeFromValue(xScaleValue, scaleTickFactor);
+    console.log('maxXRange', maxXRange);
 
     // Define scales
     const xScale = d3
-      .scaleBand()
-      .domain(data.map((d) => d.name))
-      .range([margin.left, width - margin.right])
-      .padding(0.1);
+      .scaleLinear()
+      .domain([0, maxXRange ?? 0])
+      .range([margin.left, width - margin.right]);
 
     const yScale = d3
       .scaleLinear()
-      .domain([minYRange as number, maxYRange as number])
+      .domain([minYRange ?? 0, maxYRange ?? 0])
       .range([height - margin.bottom, margin.top]);
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
+
+    const xValues = [0, ...data.map((datum) => datum.x)];
 
     // Add the rectangles
     svg
@@ -87,11 +88,17 @@ const VaribleWidthBarChartV2 = () => {
       .data(data)
       .join('rect')
       .attr('class', 'bar')
-      .attr('x', (d) => xScale(d.name) ?? 0)
+      .attr('x', (d, i) => {
+        // X position is the sum of the previous values
+        const values = xValues.map((_value, index) =>
+          xValues.slice(0, index + 1).reduce((a, b) => a + b),
+        );
+        return xScale(values[i]);
+      })
       .attr('y', (d) => {
         return d.y >= 0 ? yScale(d.y) : yScale(0);
       })
-      .attr('width', xScale.bandwidth())
+      .attr('width', (d) => xScale(d.x) - margin.left)
       .attr('height', (d) => {
         return Math.abs(yScale(0) - yScale(d.y));
       })

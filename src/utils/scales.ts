@@ -20,10 +20,7 @@ export function getMaxRange<T, U extends Numeric>(
   }
 }
 
-export function getMaxRangeFromValue<T, U extends Numeric>(
-  range: number,
-  tickFactor: number,
-): number | undefined {
+export function getMaxRangeFromValue(range: number, tickFactor: number): number | undefined {
   const maxNum = range;
 
   let maxFactor = Math.floor(tickFactor / maxNum);
