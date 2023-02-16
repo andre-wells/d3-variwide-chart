@@ -15,8 +15,7 @@ function App() {
       <VaribleWidthBarChart
         width={960}
         height={500}
-        scaleTickFactor={20}
-        margin={{ top: 20, right: 30, bottom: 55, left: 70 }}
+        margin={{ top: 30, right: 30, bottom: 70, left: 70 }}
         data={unSortedData}
       />
     </div>

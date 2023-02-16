@@ -2,18 +2,17 @@ import * as d3 from 'd3';
 import { useEffect, useRef } from 'react';
 import { getColor } from './colors';
 import { type Datum, type IMargin } from './models';
-import { getMaxRange, getMaxRangeFromValue, getMinRange, sortData } from './utils';
+import { sortData } from './utils';
 
 interface IProps {
   width: number;
   height: number;
-  scaleTickFactor: number;
   margin: IMargin;
   data: Datum[];
 }
 
 export const VaribleWidthBarChart = (props: IProps) => {
-  const { width, height, scaleTickFactor, margin, data } = props;
+  const { width, height, margin, data } = props;
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -36,24 +35,25 @@ export const VaribleWidthBarChart = (props: IProps) => {
     const svg = container.append('svg').attr('width', width).attr('height', height);
 
     // Get ranges of the chart
-    const minYRange = getMinRange(data, (d) => d.y, scaleTickFactor);
-    const maxYRange = getMaxRange(data, (d) => d.y, scaleTickFactor);
+    const minYRange = d3.min(data, (d) => d.y) ?? 0;
+    const maxYRange = d3.max(data, (d) => d.y) ?? 0;
 
-    const xScaleValue = data.reduce((acc, curr) => {
+    const maxXRange = data.reduce((acc, curr) => {
       return acc + curr.x;
     }, 0);
-    const maxXRange = getMaxRangeFromValue(xScaleValue, scaleTickFactor);
 
     // Define scales
     const xScale = d3
       .scaleLinear()
       .domain([0, maxXRange ?? 0])
-      .range([margin.left, width - margin.right]);
+      .range([margin.left, width - margin.right])
+      .nice();
 
     const yScale = d3
       .scaleLinear()
       .domain([minYRange ?? 0, maxYRange ?? 0])
-      .range([height - margin.bottom, margin.top]);
+      .range([height - margin.bottom, margin.top])
+      .nice();
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
 
@@ -83,6 +83,7 @@ export const VaribleWidthBarChart = (props: IProps) => {
         return getColor(i);
       });
 
+    // append the x axis
     svg
       .append('g')
       .attr('transform', `translate(0, ${height - margin.bottom})`)
@@ -93,6 +94,27 @@ export const VaribleWidthBarChart = (props: IProps) => {
     // append the y axis
     svg.append('g').attr('transform', `translate(${margin.left},0)`).call(yAxis);
 
+    // add the x axis label
+    svg
+      .append('text')
+      .attr('class', 'axis-label')
+      .attr('x', margin.left)
+      .attr('y', 0)
+      .attr('dy', '1em')
+      .attr('dx', '-4.5em')
+      .text('$/tCO₂e abated');
+
+    // add the y axis label
+    svg
+      .append('text')
+      .attr('class', 'axis-label')
+      .attr('x', width - margin.right)
+      .attr('y', height - margin.bottom / 2)
+      .attr('dy', '.5em')
+      .attr('dx', '-4.5em')
+      .text('tCO₂e abated');
+
+    // add legend
     const legend = svg
       .append('g')
       .attr('class', 'legend')
