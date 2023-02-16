@@ -1,15 +1,12 @@
 import * as d3 from 'd3';
-import React, { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { type Datum } from '../models/datum';
 import { type IMargin } from '../models/margin';
 import { getMaxRange, getMinRange } from '../utils/scales';
-import { clearSvg, createSvg } from '../utils/svg';
 
 const width = 960;
 const height = 500;
 const margin: IMargin = { top: 20, right: 30, bottom: 55, left: 70 };
-const CONTAINER_ID = 'svg-variwide-bar-chart-container';
-const SVG_ID = 'svg-variwide-bar-chart';
 
 const data: Datum[] = [
   {
@@ -25,13 +22,14 @@ const data: Datum[] = [
 ];
 
 const VaribleWidthBarChartV2 = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     let ignore = false;
 
     const fetchData = async () => {
       await new Promise((resolve) => setTimeout(resolve, 200)); // Simulate a data fetch
       if (!ignore) {
-        clearSvg(`#${SVG_ID}`);
         Populate(data);
       }
       return data;
@@ -45,7 +43,12 @@ const VaribleWidthBarChartV2 = () => {
   }, []);
 
   const Populate = (data: Datum[]) => {
-    const svg = createSvg(`#${CONTAINER_ID}`, SVG_ID, width, height);
+    const container = d3.select(containerRef.current);
+    if (container === null || container === undefined) return;
+
+    container.select('svg').remove();
+
+    const svg = container.append('svg').attr('width', width).attr('height', height);
 
     const minRange = getMinRange(data, (d) => d.y, 50);
     const maxRange = getMaxRange(data, (d) => d.y, 50);
@@ -92,7 +95,7 @@ const VaribleWidthBarChartV2 = () => {
     svg.append('g').attr('transform', `translate(${margin.left},0)`).call(yAxis);
   };
 
-  return <div id={CONTAINER_ID}></div>;
+  return <div ref={containerRef}></div>;
 };
 
 export default VaribleWidthBarChartV2;
