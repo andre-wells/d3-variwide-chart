@@ -4,6 +4,7 @@ import { type Datum } from '../models/datum';
 import { type IMargin } from '../models/margin';
 import { getMaxRange, getMinRange } from '../utils/scales';
 
+const scaleTickFactor = 10;
 const width = 960;
 const height = 500;
 const margin: IMargin = { top: 20, right: 30, bottom: 55, left: 70 };
@@ -11,12 +12,17 @@ const margin: IMargin = { top: 20, right: 30, bottom: 55, left: 70 };
 const data: Datum[] = [
   {
     name: 'Example 1',
-    y: -196.36,
+    y: -10.36,
     z: 21.6,
   },
   {
     name: 'Example 2',
     y: 21.6,
+    z: 275.48,
+  },
+  {
+    name: 'Example 3',
+    y: 1,
     z: 275.48,
   },
 ];
@@ -50,22 +56,19 @@ const VaribleWidthBarChartV2 = () => {
 
     const svg = container.append('svg').attr('width', width).attr('height', height);
 
-    const minRange = getMinRange(data, (d) => d.y, 50);
-    const maxRange = getMaxRange(data, (d) => d.y, 50);
+    const minRange = getMinRange(data, (d) => d.y, scaleTickFactor);
+    const maxRange = getMaxRange(data, (d) => d.y, scaleTickFactor);
 
     const xScale = d3
       .scaleBand()
+      .domain(data.map((d) => d.name))
       .range([margin.left, width - margin.right])
-      .domain(data.map((d) => d.name));
+      .padding(0.1);
 
     const yScale = d3
       .scaleLinear()
-      .range([height - margin.bottom, margin.top])
-      .domain([minRange as number, maxRange as number]);
-
-    // xScale.domain(data.map((d) => d.name));
-    // yScale.domain([0, d3.max(data, (d) => d.y) as number]);
-
+      .domain([minRange as number, maxRange as number])
+      .range([height - margin.bottom, margin.top]);
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
 
@@ -75,10 +78,12 @@ const VaribleWidthBarChartV2 = () => {
       .data(data)
       .join('rect')
       .attr('class', 'bar')
-      .attr('x', (d) => xScale(d.name) as number)
+      .attr('x', (d) => xScale(d.name) ?? 0)
       .attr('y', (d) => yScale(d.y))
       .attr('width', xScale.bandwidth())
-      .attr('height', (d) => height - margin.bottom - yScale(d.y));
+      .attr('height', (d) => {
+        return yScale(0) - yScale(d.y);
+      });
 
     // append x axis
     svg

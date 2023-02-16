@@ -7,7 +7,7 @@ export function getMaxRange<T, U extends Numeric>(
   tickFactor: number,
 ): number | undefined {
   const max = d3.max(iterable, accessor);
-  if (max == null) return undefined;
+  if (max == null) return tickFactor;
 
   const maxNum = max as unknown as number;
 
@@ -26,16 +26,17 @@ export function getMinRange<T, U extends Numeric>(
   tickFactor: number,
 ): number | undefined {
   const min = d3.min(iterable, accessor);
-  if (min == null) return undefined;
+  if (min == null) return 0;
 
-  const maxNum = Math.abs(min as unknown as number);
+  if ((min as unknown as number) >= 0) return 0;
 
-  let maxFactor = Math.floor(tickFactor / maxNum);
+  const minNum = Math.abs(min as unknown as number);
+  let minFactor = Math.floor(tickFactor / minNum);
 
-  if (maxFactor > 0) return tickFactor * -1;
+  if (minFactor > 0) return tickFactor * -1;
   else {
-    maxFactor = Math.floor(maxNum / tickFactor);
-    return tickFactor * (maxFactor + 1) * -1;
+    minFactor = Math.floor(minNum / tickFactor);
+    return tickFactor * (minFactor + 1) * -1;
   }
 }
 
