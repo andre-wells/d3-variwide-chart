@@ -12,7 +12,7 @@ const margin: IMargin = { top: 20, right: 30, bottom: 55, left: 70 };
 const data: Datum[] = [
   {
     name: 'Example 1',
-    y: -10.36,
+    y: -14.36,
     z: 21.6,
   },
   {
@@ -79,10 +79,13 @@ const VaribleWidthBarChartV2 = () => {
       .join('rect')
       .attr('class', 'bar')
       .attr('x', (d) => xScale(d.name) ?? 0)
-      .attr('y', (d) => yScale(d.y))
+      .attr('y', (d) => {
+        return d.y >= 0 ? yScale(d.y) : yScale(0);
+      })
       .attr('width', xScale.bandwidth())
       .attr('height', (d) => {
-        return yScale(0) - yScale(d.y);
+        console.log('height', Math.abs(yScale(0) - yScale(d.y)));
+        return Math.abs(yScale(0) - yScale(d.y));
       });
 
     // append x axis
