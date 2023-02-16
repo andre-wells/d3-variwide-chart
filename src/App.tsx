@@ -11,7 +11,7 @@ function App() {
       <h2>Sample Bar Chart with Scale </h2>
       <BarChartWithScale />
 
-      <h2>Variable Width Bar Chart Final</h2>
+      <h2>Variable Width Bar Chart</h2>
       <VaribleWidthBarChartV2 />
 
       <h2>Variable Width Bar Chart Sample</h2>
