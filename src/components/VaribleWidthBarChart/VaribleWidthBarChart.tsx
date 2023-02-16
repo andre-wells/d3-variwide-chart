@@ -55,7 +55,8 @@ export const VaribleWidthBarChart = (props: IProps) => {
       .range([height - margin.bottom, margin.top])
       .nice();
     const xAxis = d3.axisBottom(xScale);
-    const yAxis = d3.axisLeft(yScale);
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+    const yAxis = d3.axisLeft(yScale).tickFormat((d) => `$${d.toString()}`);
 
     const xValues = [0, ...data.map((datum) => datum.x)];
 
