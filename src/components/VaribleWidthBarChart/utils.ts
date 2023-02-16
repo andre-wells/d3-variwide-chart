@@ -1,5 +1,6 @@
 import { type Numeric } from 'd3';
 import * as d3 from 'd3';
+import { type Datum } from './models';
 
 export function getMaxRange<T, U extends Numeric>(
   iterable: Iterable<T>,
@@ -50,4 +51,9 @@ export function getMinRange<T, U extends Numeric>(
     minFactor = Math.floor(minNum / tickFactor);
     return tickFactor * (minFactor + 1) * -1;
   }
+}
+
+export function sortData(data: Datum[]): Datum[] {
+  const result = data.sort((a, b) => a.y - b.y);
+  return result;
 }

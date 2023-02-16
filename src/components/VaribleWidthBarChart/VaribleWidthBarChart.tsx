@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import { useEffect, useRef } from 'react';
 import { getColor } from './colors';
 import { type Datum, type IMargin } from './models';
-import { getMaxRange, getMaxRangeFromValue, getMinRange } from './utils';
+import { getMaxRange, getMaxRangeFromValue, getMinRange, sortData } from './utils';
 
 interface IProps {
   width: number;
@@ -70,7 +70,7 @@ export const VaribleWidthBarChart = (props: IProps) => {
     // Add the rectangles
     svg
       .selectAll('rect')
-      .data(data)
+      .data(sortData(data))
       .join('rect')
       .attr('class', 'bar')
       .attr('x', (d, i) => {
